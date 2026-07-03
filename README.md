@@ -1,4 +1,4 @@
-# AIHistory
+# AIChatExport
 
 一个 Edge/Chrome 浏览器扩展，用于选择和导出 AI 对话历史记录为 Markdown 文件。
 
@@ -15,10 +15,9 @@
 
 ## 支持的网站
 
-| 网站 | 状态 |
-|------|------|
+| 网站                | 状态    |
+| ----------------- | ----- |
 | chat.deepseek.com | ✅ 已验证 |
-
 
 ## 安装
 
@@ -26,17 +25,13 @@
 
 1. 下载或克隆本仓库到本地
    ```bash
-   git clone https://github.com/your-username/AIHistory.git
+   git clone https://github.com/UESteveJobs/AIChatExport.git
    ```
-
 2. 打开浏览器扩展管理页面
    - Edge: 地址栏输入 `edge://extensions/`
    - Chrome: 地址栏输入 `chrome://extensions/`
-
 3. 打开右上角的 **开发者模式**
-
 4. 点击 **加载已解压的扩展**，选择项目文件夹
-
 5. 插件图标出现在工具栏中，安装完成
 
 ### 更新
@@ -60,7 +55,7 @@
 
 ## 导出示例
 
-``````markdown
+````markdown
 # AI 对话导出
 > 导出时间: 2026/7/3 15:27:39
 > 来源: chat.deepseek.com
@@ -82,9 +77,10 @@
 def factorial(n):
    return 1 if n <= 1 else n * factorial(n - 1)
 ```
-``````
+````
 
----
+***
+
 ```
 
 ## 项目结构
@@ -114,20 +110,20 @@ AIHistory/
 
 AI 回复内容通过递归方式遍历 DOM 树，以下格式会正确转换为 Markdown：
 
-| HTML 元素 | Markdown 输出 |
-|-----------|--------------|
-| `<h1>~<h6>` | `#` ~ `######` 标题 |
-| `<p>` | 段落 |
-| `<strong>/<b>` | `**粗体**` |
-| `<em>/<i>` | `*斜体*` |
-| `<code>` | `` `行内代码` `` |
-| `<pre>` | ` ```代码块``` ` |
-| `<blockquote>` | `> 引用`（支持嵌套） |
-| `<ul>/<ol>` | 无序/有序列表（支持嵌套） |
-| `<table>` | Markdown 表格 |
-| `<del>/<s>` | `~~删除线~~` |
-| KaTeX 公式 | `$...$` 或 `$$...$$` |
-| SVG/MATH | 自动忽略 |
+| HTML 元素        | Markdown 输出         |
+| -------------- | ------------------- |
+| `<h1>~<h6>`    | `#` \~ `######` 标题  |
+| `<p>`          | 段落                  |
+| `<strong>/<b>` | `**粗体**`            |
+| `<em>/<i>`     | `*斜体*`              |
+| `<code>`       | `` `行内代码` ``        |
+| `<pre>`        | ` ```代码块``` `       |
+| `<blockquote>` | `> 引用`（支持嵌套）        |
+| `<ul>/<ol>`    | 无序/有序列表（支持嵌套）       |
+| `<table>`      | Markdown 表格         |
+| `<del>/<s>`    | `~~删除线~~`           |
+| KaTeX 公式       | `$...$` 或 `$$...$$` |
+| SVG/MATH       | 自动忽略                |
 
 ## 开发
 
@@ -138,6 +134,6 @@ AI 回复内容通过递归方式遍历 DOM 树，以下格式会正确转换为
 ### 调试
 
 - 在 DeepSeek 页面按 F12 打开开发者工具，查看 Console 面板
-- 日志前缀 `[AIHistory]` 用于过滤插件输出
+- 日志前缀 `[AIChatExport]` 用于过滤插件输出
 - 在扩展管理页面点击 **Service Worker** 可查看 background.js 的日志
 

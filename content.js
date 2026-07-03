@@ -7,7 +7,7 @@ let title = ''
 let messageOrder = []
 let messageStore = {}
 
-const STORE_KEY = 'ai-history-store'
+const STORE_KEY = 'ai-export-store'
 const STORE_TTL = 15 * 60 * 1000
 
 function loadStore() {
@@ -44,12 +44,12 @@ function clearStore() {
 function updateSelectBar() {
     let total = Object.keys(messageStore).length
     let checked = Object.values(messageStore).filter(r => r.checked).length
-    let selectAll = document.getElementById('ai-history-select-all')
+    let selectAll = document.getElementById('ai-export-select-all')
     if (selectAll) {
         selectAll.checked = checked > 0 && checked === total
         selectAll.indeterminate = checked > 0 && checked < total
     }
-    let exportBtn = document.getElementById('ai-history-export-btn')
+    let exportBtn = document.getElementById('ai-export-btn')
     if (exportBtn) {
         exportBtn.textContent = checked > 0 ? `导出为 .md(${checked})` : '导出为 .md'
         exportBtn.disabled = checked === 0
@@ -158,7 +158,7 @@ function translateToMarkdown(msg, role) {
 
 function addCheckboxToMsg(msg) {
     let wrapper = msg.parentElement
-    if (wrapper.querySelector('.ai-history-cb')) return
+    if (wrapper.querySelector('.ai-export-cb')) return
     let key = wrapper.getAttribute('data-virtual-list-item-key')
     if (!key) return
     if (!messageStore[key]) {
@@ -171,46 +171,46 @@ function addCheckboxToMsg(msg) {
         messageOrder.sort((a, b) => Number(a) - Number(b))
         saveStore()
     }
-    wrapper.classList.add('ai-history-card')
+    wrapper.classList.add('ai-export-card')
     let cb = document.createElement('input')
     cb.type = 'checkbox'
-    cb.className = 'ai-history-cb'
+    cb.className = 'ai-export-cb'
     cb.dataset.key = key
     cb.checked = messageStore[key].checked
     wrapper.prepend(cb)
-    if (cb.checked) wrapper.classList.add('ai-history-card--checked')
+    if (cb.checked) wrapper.classList.add('ai-export-card--checked')
     cb.addEventListener('change', () => {
         messageStore[key].checked = cb.checked
-        wrapper.classList.toggle('ai-history-card--checked', cb.checked)
+        wrapper.classList.toggle('ai-export-card--checked', cb.checked)
         saveStore()
         updateSelectBar()
     })
 }
 
 function createSelectBar() {
-    if (baseWindow.querySelector('.ai-history-select-bar')) return
+    if (baseWindow.querySelector('.ai-export-select-bar')) return
     let target = inputBox
     let bar = document.createElement('div')
-    bar.className = 'ai-history-select-bar'
+    bar.className = 'ai-export-select-bar'
     bar.innerHTML = `
-        <label><input type="checkbox" id="ai-history-select-all"/>全选</label>
-        <button id="ai-history-export-btn">导出为 .md</button>
-        <button id="ai-history-cancel-btn">取消</button>`
+        <label><input type="checkbox" id="ai-export-select-all"/>全选</label>
+        <button id="ai-export-btn">导出为 .md</button>
+        <button id="ai-export-cancel-btn">取消</button>`
     target.parentElement.insertBefore(bar, target)
 
-    document.getElementById('ai-history-select-all').addEventListener('change', e => {
+    document.getElementById('ai-export-select-all').addEventListener('change', e => {
         let checked = e.target.checked
         for (let k in messageStore) messageStore[k].checked = checked
-        baseWindow.querySelectorAll('.ai-history-cb').forEach(cb => {
+        baseWindow.querySelectorAll('.ai-export-cb').forEach(cb => {
             cb.checked = checked
-            let card = cb.closest('.ai-history-card')
-            if (card) card.classList.toggle('ai-history-card--checked', checked)
+            let card = cb.closest('.ai-export-card')
+            if (card) card.classList.toggle('ai-export-card--checked', checked)
         })
         saveStore()
         updateSelectBar()
     })
-    document.getElementById('ai-history-export-btn').addEventListener('click', exportToMarkdown)
-    document.getElementById('ai-history-cancel-btn').addEventListener('click', exitSelectMode)
+    document.getElementById('ai-export-btn').addEventListener('click', exportToMarkdown)
+    document.getElementById('ai-export-cancel-btn').addEventListener('click', exitSelectMode)
     updateSelectBar()
 }
 
@@ -223,7 +223,7 @@ function watchNewMessages() {
                 if (node.nodeType !== 1) continue
                 let msgs = node.matches?.('.ds-message') ? [node] : [...node.querySelectorAll?.('.ds-message') || []]
                 msgs.forEach(msg => {
-                    if (!msg.parentNode.querySelector('.ai-history-cb')) addCheckboxToMsg(msg)
+                    if (!msg.parentNode.querySelector('.ai-export-cb')) addCheckboxToMsg(msg)
                 })
                 if (msgs.length) updateSelectBar()
             }
@@ -235,13 +235,13 @@ function watchNewMessages() {
 function exitSelectMode() {
     isSelectMode = false
     if (newMsgObserver) { newMsgObserver.disconnect(); newMsgObserver = null }
-    baseWindow.querySelectorAll('.ai-history-cb').forEach(el => el.remove())
-    baseWindow.querySelectorAll('.ai-history-card').forEach(el => {
-        el.classList.remove('ai-history-card', 'ai-history-card--checked')
+    baseWindow.querySelectorAll('.ai-export-cb').forEach(el => el.remove())
+    baseWindow.querySelectorAll('.ai-export-card').forEach(el => {
+        el.classList.remove('ai-export-card', 'ai-export-card--checked')
         el.style.border = ''; el.style.borderRadius = ''; el.style.padding = ''
         el.style.margin = ''; el.style.background = ''
     })
-    let bar = baseWindow.querySelector('.ai-history-select-bar')
+    let bar = baseWindow.querySelector('.ai-export-select-bar')
     if (bar) bar.remove()
     if (inputBox) inputBox.style.display = ''
     clearStore()
@@ -272,11 +272,11 @@ function findBaseWindow() {
     rootWindow = baseWindow.parentNode
     let titleRoot = rootWindow.children[0] || rootWindow
     title = titleRoot.innerText.replace(/[📥]+/g, '').trim()
-    let btn = titleRoot.querySelector('.ai-history-download-btn')
+    let btn = titleRoot.querySelector('.ai-export-download-btn')
     if (!btn) {
         btn = document.createElement('button')
         btn.textContent = '📥'
-        btn.className = 'ai-history-download-btn'
+        btn.className = 'ai-export-download-btn'
         btn.addEventListener('click', toggleSelectMode)
     }
     titleRoot.appendChild(btn)
@@ -303,7 +303,7 @@ function exportToMarkdown() {
         let icon = r.role === 'User' ? '👤' : '🤖'
         md += `## ${icon} ${r.role}\n\n${r.content.trim()}\n\n---\n\n`
     })
-    let fn = `ai-history-${(title || '').replace(/[\\/:*?"<>|]/g, '_')}-${Date.now()}.md`
+    let fn = `ai-export-${(title || '').replace(/[\\/:*?"<>|]/g, '_')}-${Date.now()}.md`
     let blob = new Blob([md], { type: 'text/markdown' })
     let url = URL.createObjectURL(blob)
     let a = document.createElement('a')
@@ -316,7 +316,7 @@ function injectStyles() {
     let s = document.createElement('style')
     s.textContent = `
 
-    .ai-history-download-btn{
+    .ai-export-download-btn{
         background:none!important;
         border:none!important;
         font-size:18px!important;
@@ -327,11 +327,11 @@ function injectStyles() {
         line-height:1!important
     }
 
-    .ai-history-download-btn:hover{
+    .ai-export-download-btn:hover{
         background:rgba(128,128,128,.15)!important  
     }
 
-    .ai-history-card{
+    .ai-export-card{
         border:1.5px solid #4f6ef762!important;
         border-radius:10px!important;
         padding:14px 14px 14px 44px!important;
@@ -340,12 +340,12 @@ function injectStyles() {
         position:relative!important
     }
 
-    .ai-history-card--checked{
+    .ai-export-card--checked{
         border-color:#4f6ef7!important;
         background:rgba(79,110,247,.07)!important
     }
 
-    .ai-history-cb{
+    .ai-export-cb{
         -webkit-appearance:none!important;
         appearance:none!important;
         position:absolute!important;
@@ -365,12 +365,12 @@ function injectStyles() {
         justify-content:center!important
     }
 
-    .ai-history-cb:checked{
+    .ai-export-cb:checked{
         border-color:#4f6ef7!important;
         background:#4f6ef7!important
     }
 
-    .ai-history-cb:checked::after{
+    .ai-export-cb:checked::after{
         content:''!important;
         display:block!important;
         width:5px!important;
@@ -381,11 +381,11 @@ function injectStyles() {
         margin-top:-1px!important
     }
 
-    .ai-history-cb:hover{
+    .ai-export-cb:hover{
         border-color:#4f6ef7!important
     }
 
-    .ai-history-select-bar{
+    .ai-export-select-bar{
         display:flex!important;
         align-items:center!important;
         gap:12px!important;
@@ -396,7 +396,7 @@ function injectStyles() {
         font-size:14px!important;color:#e0e0e0!important
     }
 
-    .ai-history-select-bar label{
+    .ai-export-select-bar label{
         display:flex!important;
         align-items:center!important;
         gap:6px!important;
@@ -404,14 +404,14 @@ function injectStyles() {
         user-select:none!important
     }
 
-    .ai-history-select-bar input[type="checkbox"]{
+    .ai-export-select-bar input[type="checkbox"]{
         accent-color:#4f6ef7!important;
         width:15px!important;
         height:15px!important;
         cursor:pointer!important
     }
 
-    .ai-history-select-bar button{
+    .ai-export-select-bar button{
         padding:6px 14px!important;
         border:none!important;
         border-radius:6px!important;
@@ -420,27 +420,27 @@ function injectStyles() {
         transition:opacity .2s!important
     }
         
-    #ai-history-export-btn{
+    #ai-export-btn{
         background:#4f6ef7!important;
         color:#fff!important;
         margin-left:auto!important
     }
 
-    #ai-history-export-btn:disabled{
+    #ai-export-btn:disabled{
         opacity:.4!important;
         cursor:not-allowed!important
     }
 
-    #ai-history-export-btn:not(:disabled):hover{
+    #ai-export-btn:not(:disabled):hover{
         opacity:.85!important
     }
 
-    #ai-history-cancel-btn{
+    #ai-export-cancel-btn{
         background:rgba(255,255,255,.08)!important;
         color:#ccc!important
     }
 
-    #ai-history-cancel-btn:hover{
+    #ai-export-cancel-btn:hover{
         background:rgba(255,255,255,.15)!important
     }
     `
