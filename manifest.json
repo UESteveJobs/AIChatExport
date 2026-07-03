@@ -1,0 +1,26 @@
+{
+    "manifest_version":3,
+    "name":"AIChatExport",
+    "version":"0.1.0",
+    "permissions":[
+        "tabs",
+        "storage",
+        "downloads"
+    ],
+    "content_scripts":[
+        {
+            "matches":[
+                "https://chat.deepseek.com/*"
+            
+            ],
+            "js":[
+                "content.js"
+            ],
+            "run_at":"document_idle"
+        }
+    ],
+    "background":{
+        "service_worker": "background.js"
+    }
+
+}
