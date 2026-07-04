@@ -25,7 +25,7 @@
 
 1. 下载或克隆本仓库到本地
    ```bash
-   git clone https://github.com/UESteveJobs/AIChatExport.git
+   git clone https://github.com/SteveWey/AIChatExport.git
    ```
 2. 打开浏览器扩展管理页面
    - Edge: 地址栏输入 `edge://extensions/`
